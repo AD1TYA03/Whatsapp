@@ -1,29 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { FlatList, StyleSheet } from "react-native";
-import ContactListItems from "../components/ContactListItems";
+import { useState, useEffect } from "react";
+import { FlatList } from "react-native";
+import ContactListItem from "../components/ContactListItems";
 import { API, graphqlOperation } from "aws-amplify";
 import { listUsers } from "../graphql/queries";
 
-function ContactScreen() {
+const ContactsScreen = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    API.graphql(graphqlOperation(listUsers)).then((res) => {
-      setUsers(res?.data?.listUsers?.items);
+    API.graphql(graphqlOperation(listUsers)).then((result) => {
+      setUsers(result.data?.listUsers?.items);
     });
-  },[]);
+  }, []);
+
   return (
     <FlatList
-      style={styles.container}
       data={users}
-      renderItem={({ item }) => <ContactListItems chat={item} />}
+      renderItem={({ item }) => <ContactListItem user={item} />}
+      style={{ backgroundColor: "white" }}
     />
   );
-}
+};
 
-export default ContactScreen;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+export default ContactsScreen;

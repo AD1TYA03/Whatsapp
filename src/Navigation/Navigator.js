@@ -2,7 +2,7 @@
 import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ChatScreen from '../screens/ChatScreen';
-import ChatsScreen from '../screens/ChatsScreen';
+import ChatsScreen from '../screens/chatsScreen/ChatsScreen';
 import { StyleSheet } from 'react-native';
 import MainTabNavigator from './MainTabNavigator';
 import ContactScreen from '../screens/ContactScreen';

@@ -1,6 +1,6 @@
 import { View ,StyleSheet } from "react-native"
 import NotImplementedScreen from "../screens/NotImplemented";
-import ChatsScreen from "../screens/ChatsScreen";
+import ChatsScreen from "../screens/chatsScreen/ChatsScreen";
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {Ionicons ,Entypo} from '@expo/vector-icons';
 import SettingsScreen from "../screens/SettingsScreen";

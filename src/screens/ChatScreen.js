@@ -1,43 +1,69 @@
-import {View,Text,StyleSheet,ImageBackground , FlatList ,KeyboardAvoidingView, Platform} from  'react-native'
-import bg from "../../assets/images/BG.png"
-import Message from '../components/Message'
-import messages from "../../assets/data/messages.json"
-import InputBox from '../components/InputBox'
-import {useNavigation, useRoute} from '@react-navigation/native'
+import { useEffect, useState } from "react";
+import {
+  ImageBackground,
+  StyleSheet,
+  FlatList,
+  KeyboardAvoidingView,
+  ActivityIndicator,
+} from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import Message from "../components/Message";
+import InputBox from "../components/InputBox";
 
-function ChatScreen() {
-const route=useRoute();
-const navigation = useNavigation();
+import bg from "../../assets/images/BG.png";
+import { API, graphqlOperation } from "aws-amplify";
+import { getChatRoom } from "../graphql/queries";
 
-navigation.setOptions({headerTitle: route.params.name});
+const ChatScreen = () => {
+  const [chatRoom, setChatRoom] = useState(null);
+
+  const route = useRoute();
+  const navigation = useNavigation();
+
+  const chatroomID = route.params.id;
+
+  useEffect(() => {
+    API.graphql(graphqlOperation(getChatRoom, { id: chatroomID })).then(
+      (result) => setChatRoom(result.data?.getChatRoom)
+    );
+  }, []);
+
+  useEffect(() => {
+    navigation.setOptions({ title: route.params.name });
+  }, [route.params.name]);
+
+  if (!chatRoom) {
+    return <ActivityIndicator />;
+  }
+
+  console.log(chatRoom.Messages.items);
+
   return (
-    <KeyboardAvoidingView 
-    behavior={Platform.OS==='ios' ? "padding" : "height"}
-    keyboardVerticalOffset={Platform.OS==='ios' ?60:180}
-    style={styles.bg}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 90}
+      style={styles.bg}
     >
-    <ImageBackground source={bg} style={styles.bg}>
-      
-     <FlatList style={styles.list}
-      data={messages}
-      renderItem={({item})=> <Message message={item}/>}
-      inverted
-     />
-    <InputBox/>
-    </ImageBackground>
+      <ImageBackground source={bg} style={styles.bg}>
+        <FlatList
+          data={chatRoom.Messages.items}
+          renderItem={({ item }) => <Message message={item} />}
+          style={styles.list}
+          inverted
+        />
+        <InputBox chatroom={chatRoom} />
+      </ImageBackground>
     </KeyboardAvoidingView>
-    
-  )
-}
+  );
+};
 
-export default ChatScreen
-
-const  styles = StyleSheet.create({
-bg:{
-  flex:1,
-},
-list:{
-  padding:10,
-  
-},
+const styles = StyleSheet.create({
+  bg: {
+    flex: 1,
+  },
+  list: {
+    padding: 10,
+  },
 });
+
+export default ChatScreen;

@@ -1,37 +1,70 @@
-import { View, Text, Image, StyleSheet ,Pressable } from "react-native";
+import { Text, Image, StyleSheet, Pressable, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { API, graphqlOperation, Auth } from "aws-amplify";
+import { createChatRoom,createUserChatRoom } from "../graphql/mutations";
+import { getCommonChatRoomWithUser } from "../services/chatRoomService";
 
 import dayjs from "dayjs";
-import relativeTime from  "dayjs/plugin/relativeTime"
+import relativeTime from "dayjs/plugin/relativeTime";
+
 dayjs.extend(relativeTime);
 
+const ContactListItem = ({ user }) => {
+  const navigation = useNavigation();
 
-function ContactListItems({chat}) {
-    const navigation = useNavigation();
+  const onPress = async () => {
+    // Check if we already have a ChatRoom with user
+    const existingChatRoom = await getCommonChatRoomWithUser(user.id);
+    if (existingChatRoom) {
+      navigation.navigate("Chat", { id: existingChatRoom.id });
+      return;
+    }
+
+    // Create a new Chatroom
+    const newChatRoomData = await API.graphql(
+      graphqlOperation(createChatRoom, { input: {} })
+    );
+    console.log(newChatRoomData);
+    if (!newChatRoomData.data?.createChatRoom) {
+      console.log("Error creating the chat error");
+    }
+    const newChatRoom = newChatRoomData.data?.createChatRoom;
+
+    // Add the clicked user to the ChatRoom
+    await API.graphql(
+      graphqlOperation(createUserChatRoom, {
+        input: { chatRoomId: newChatRoom.id, userId: user.id },
+      })
+    );
+
+    // Add the auth user to the ChatRoom
+    const authUser = await Auth.currentAuthenticatedUser();
+    await API.graphql(
+      graphqlOperation(createUserChatRoom, {
+        input: { chatRoomId: newChatRoom.id, userId: authUser.attributes.sub },
+      })
+    );
+
+    // navigate to the newly created ChatRoom
+    navigation.navigate("Chat", { id: newChatRoom.id });
+  };
+
   return (
-    <Pressable onPress={()=>{navigation.navigate('Chat',{id: chat.id,name: chat.user.name})}} style={styles.container}>
-      <Image
-        source={{
-          uri: chat.image,
-        }}
-        style={styles.image}
-      />
+    <Pressable onPress={onPress} style={styles.container}>
+      <Image source={{ uri: user.image }} style={styles.image} />
+
       <View style={styles.content}>
-        <View style={styles.row}>
-          <Text numberOfLines={1} style={styles.name}>
-           {chat.name}
-          </Text>
-         
-        </View>
+        <Text style={styles.name} numberOfLines={1}>
+          {user.name}
+        </Text>
+
         <Text numberOfLines={2} style={styles.subTitle}>
-          {chat.status}
+          {user.status}
         </Text>
       </View>
     </Pressable>
   );
-}
-
-export default ContactListItems;
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -39,27 +72,23 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 5,
     height: 70,
-    
+    alignItems: "center",
   },
-  image: { width: 60, 
-    height: 60, 
+  image: {
+    width: 60,
+    height: 60,
     borderRadius: 30,
-     marginRight: 10 
-    },
-
+    marginRight: 10,
+  },
   content: {
     flex: 1,
-    borderBottomColor:"lightgrey",
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  row: {
-    flexDirection: "row",
-    marginBottom: 5,
+  name: {
+    fontWeight: "bold",
   },
-  name: { flex: 1, fontWeight: "bold" },
   subTitle: {
-    color: "grey",
-    width:"100%",
-    alignSelf:"stretch"
+    color: "gray",
   },
 });
+
+export default ContactListItem;
