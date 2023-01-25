@@ -3,6 +3,7 @@ import NotImplementedScreen from "../screens/NotImplemented";
 import ChatsScreen from "../screens/ChatsScreen";
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {Ionicons ,Entypo} from '@expo/vector-icons';
+import SettingsScreen from "../screens/SettingsScreen";
 
 
 const Tab=createBottomTabNavigator();
@@ -61,7 +62,7 @@ function MainTabNavigator() {
         />
 
 <Tab.Screen  name="Settings"
-        component={NotImplementedScreen}
+        component={SettingsScreen}
 
         options={{
     tabBarIcon: ({ color, size }) => (
