@@ -12,19 +12,19 @@ function ContactListItems({chat}) {
     <Pressable onPress={()=>{navigation.navigate('Chat',{id: chat.id,name: chat.user.name})}} style={styles.container}>
       <Image
         source={{
-          uri: chat.user.image,
+          uri: chat.image,
         }}
         style={styles.image}
       />
       <View style={styles.content}>
         <View style={styles.row}>
           <Text numberOfLines={1} style={styles.name}>
-           {chat.user.name}
+           {chat.name}
           </Text>
          
         </View>
         <Text numberOfLines={2} style={styles.subTitle}>
-          {chat.user.status}
+          {chat.status}
         </Text>
       </View>
     </Pressable>
@@ -59,5 +59,7 @@ const styles = StyleSheet.create({
   name: { flex: 1, fontWeight: "bold" },
   subTitle: {
     color: "grey",
+    width:"100%",
+    alignSelf:"stretch"
   },
 });

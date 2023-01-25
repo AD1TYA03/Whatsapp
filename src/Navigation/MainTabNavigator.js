@@ -12,6 +12,7 @@ function MainTabNavigator() {
   <Tab.Navigator
   screenOptions={{tabBarStyle: { backgroundColor: "whitesmoke" },
     headerStyle: { backgroundColor: "whitesmoke" },}}
+    initialRouteName="Chats"
   >
     <Tab.Screen  name="Status"
         component={NotImplementedScreen}
@@ -71,7 +72,7 @@ function MainTabNavigator() {
   }}
         />
 
-
+  
   </Tab.Navigator>
   )
 }
