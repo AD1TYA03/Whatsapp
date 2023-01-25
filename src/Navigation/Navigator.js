@@ -5,6 +5,7 @@ import ChatScreen from '../screens/ChatScreen';
 import ChatsScreen from '../screens/ChatsScreen';
 import { StyleSheet } from 'react-native';
 import MainTabNavigator from './MainTabNavigator';
+import ContactScreen from '../screens/ContactScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,7 @@ function Navigator() {
     <Stack.Navigator>
     <Stack.Screen name='Home' component={MainTabNavigator}  options={{headerShown:false}}/>
     <Stack.Screen name="Chat" component={ChatScreen} />
+    <Stack.Screen name="Contacts" component={ContactScreen} />
     </Stack.Navigator>
     </NavigationContainer>
   )
